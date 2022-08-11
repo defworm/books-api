@@ -1,12 +1,26 @@
 // Import express
 const express = require('express')
+const mongoose = require ('mongoose')
+
+require('dotenv').config()
 
 //Initialize application
 const app = express()
-const port = 3000
+const PORT = process.env.PORT
+
+mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true}, 
+    () => { console.log('connected to mongo: ', process.env.MONGO_URI) }
+)
 
 //Configure body-parser for JSON
 app.use(express.json())
+
+// MIDDLEWARE
+app.use(express.urlencoded({extended: true}))
+
+//Require Books Controller
+const booksController = require('./controllers/books_controller.js')
+app.use('/books', booksController)
 
 //Setting up a basic get route
 app.get('/', (req, res) => {
@@ -14,6 +28,6 @@ app.get('/', (req, res) => {
 })
 
 //Setting up express listener
-app.listen(port, () => {
-    console.log("listening at port", port);
+app.listen(PORT, () => {
+    console.log("listening at port", PORT);
 })
