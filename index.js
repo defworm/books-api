@@ -1,7 +1,6 @@
 // Import express
 const express = require('express')
 const mongoose = require ('mongoose')
-
 require('dotenv').config()
 
 //Initialize application
@@ -18,14 +17,20 @@ app.use(express.json())
 // MIDDLEWARE
 app.use(express.urlencoded({extended: true}))
 
+
 //Require Books Controller
 const booksController = require('./controllers/books_controller.js')
 app.use('/books', booksController)
 
-//Setting up a basic get route
+// ROUTES
 app.get('/', (req, res) => {
-    res.send('Hello World')
-})
+    res.send('Yo Earth')
+  })
+
+// 404 Page
+app.get('*', (req, res) => {
+    res.send('404')
+  })
 
 //Setting up express listener
 app.listen(PORT, () => {

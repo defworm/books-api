@@ -2,6 +2,98 @@ const express = require('express')
 const books = express.Router()
 const Books = require('../models/books.js')
 
+
+//Index
+books.get('/', (req, res) => {
+    Books.find()
+    .then(foundBooks => {
+        res.json(foundBooks)
+    })
+})
+
+// Books route
+books.get('/books', (req, res) => {
+    if (Books[req.params.arrayIndex]) {
+        res.json('Show', {
+            books:Books[req.params.arrayIndex]
+        })
+    } else {
+        res.json('404')
+    }
+})
+
+// Books ID route SHOW
+books.get('/books/:id', (req, res) => {
+    Books.findById(req.params.id)
+    .populate('books')
+    .then(foundBooks => {
+        res.json('show', {
+            books: foundBooks
+        })
+    })
+    .catch(err => {
+        res.json('404')
+    })
+})
+
+// CREATE
+books.post('/books', (req, res) => {
+    if(!req.body.image) {
+        req.body.image = undefined 
+    }
+  
+    Books.create(req.body)
+    res.redirect('/books')
+  })
+
+ // EDIT
+ books.get('/:id/edit', (req, res) => {
+    Books.find()
+      .then(foundBooks => {
+          Books.findById(req.params.id)
+            .then(foundBooks => {
+              res.json('edit', {
+                  bread: foundBooks, 
+                  bakers: foundBooks 
+              })
+            })
+      })
+  })
+
+  // DELETE
+books.delete('/books/:id', (req, res) => {
+    Books.findByIdAndDelete(req.params.id) 
+      .then(deletedBooks => { 
+        res.status("").redirect('/books')
+      })
+  })
+
+   // UPDATE
+   books.put('/books/:id', (req, res) => {
+    // if(req.body.hasGluten === 'on'){
+    //   req.body.hasGluten = true
+    // } else {
+    //   req.body.hasGluten = false
+    // }
+    Books.findByIdAndUpdate(req.params.id, req.body, { new: true }) 
+      .then(updatedBooks => {
+        console.log(updatedBooks) 
+        res.redirect(`/books/${req.params.id}`) 
+      })
+  })
+
+  books.get('/:arrayIndex', (req, res) => {
+    if (Books[req.params.arrayIndex]) {
+      res.json('Show', {
+        books:Books[req.params.arrayIndex]
+      })
+    } else {
+      res.json('404')
+    }
+  })
+
+module.exports = books
+
 // books.get('/seed', (req, res) => {
 //     Books.insertMany([{
 //         "title": "The Shinobi Initiative",
@@ -26,7 +118,7 @@ const Books = require('../models/books.js')
 //       },
 //       {
 //         "title": "Wâˆ€RP",
-//         "description": "A time-space anomaly folds matter from different points in earth's history in on itself, sending six unlikely heroes on a race against time as worlds literally collide.",
+//         "description": "A time-space anomaly folds matter from different points in earth's history in on itself, jsoning six unlikely heroes on a race against time as worlds literally collide.",
 //         "year": 2010,
 //         "quantity": 4,
 //         "imageURL": "https://imgur.com/qYLKtPH.jpeg"
@@ -38,89 +130,3 @@ const Books = require('../models/books.js')
 //             message: 'Seed unsuccessful'
 //         }))
 // })
-
-
-//Index
-books.get('/', (req, res) => {
-    Books.find()
-    .then(foundBooks => {
-        res.json(foundBooks)
-    })
-})
-
-// Books route
-books.get('/books', (req, res) => {
-    if (Books[req.params.arrayIndex]) {
-        res.render('Show', {
-            books:Books[req.params.arrayIndex]
-        })
-    } else {
-        res.render('404')
-    }
-})
-
-// Books ID route SHOW
-books.get('/:id', (req, res) => {
-    Books.findById(req.params.id)
-    .populate('books')
-    .then(foundBooks => {
-        res.render('show', {
-            books: foundBooks
-        })
-    })
-    .catch(err => {
-        res.send('404')
-    })
-})
-
-// CREATE
-books.post('/', (req, res) => {
-    if(!req.body.image) {
-        req.body.image = undefined 
-    }
-    // if(req.body.hasGluten === 'on') {
-    //   req.body.hasGluten = true
-    // } else {
-    //   req.body.hasGluten = false
-    // }
-    Books.create(req.body)
-    res.redirect('/books')
-  })
-
- // EDIT
- books.get('/:id/edit', (req, res) => {
-    Books.find()
-      .then(foundBooks => {
-          Books.findById(req.params.id)
-            .then(foundBooks => {
-              res.render('edit', {
-                  bread: foundBooks, 
-                  bakers: foundBooks 
-              })
-            })
-      })
-  })
-
-  // DELETE
-books.delete('/:id', (req, res) => {
-    Books.findByIdAndDelete(req.params.id) 
-      .then(deletedBooks => { 
-        res.status(303).redirect('/books')
-      })
-  })
-
-   // UPDATE
-   books.put('/:id', (req, res) => {
-    // if(req.body.hasGluten === 'on'){
-    //   req.body.hasGluten = true
-    // } else {
-    //   req.body.hasGluten = false
-    // }
-    Books.findByIdAndUpdate(req.params.id, req.body, { new: true }) 
-      .then(updatedBooks => {
-        console.log(updatedBooks) 
-        res.redirect(`/books/${req.params.id}`) 
-      })
-  })
-
-module.exports = books
